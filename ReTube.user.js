@@ -52,7 +52,7 @@ class YTP {
         // Removes UI shrinking to adjust to the video size
         // Fixes Return YouTube Dislike ratio bar
         var style = document.createElement("style");
-        style.innerHTML = "ytd-button-renderer.ytd-menu-renderer button{width:36px;height:36px;}ytd-download-button-renderer button{width:36px!important;height:36px!important;}.ytd-video-primary-info-renderer yt-icon-button{width:36px!important;height:36px!important;}#menu.ytd-video-primary-info-renderer{top:0!important;}ytd-menu-renderer.ytd-video-primary-info-renderer{overflow-y:visible!important;}#primary{max-width:none!important;}.ryd-tooltip{left:-4px;margin-top:-3px;}";
+        style.innerHTML = "ytd-button-renderer.ytd-menu-renderer button{width:36px;height:36px;}ytd-download-button-renderer button{width:36px!important;height:36px!important;}.ytd-video-primary-info-renderer yt-icon-button{width:36px!important;height:36px!important;}#menu.ytd-video-primary-info-renderer{top:0!important;}ytd-menu-renderer.ytd-video-primary-info-renderer{overflow-y:visible!important;}#primary{max-width:none!important;}#menu-container{display:block!important;}.ryd-tooltip{margin-top:-3px;}";
         document.head.appendChild(style);
 
         this.observer.observe(document, { subtree: true, childList: true });
@@ -67,8 +67,6 @@ class YTP {
         document.querySelector("ytd-video-owner-renderer").removeAttribute("modern-metapanel");
         // Fixes margin above video title
         document.querySelector("ytd-watch-flexy").removeAttribute("rounded-info-panel");
-        // Fixes Return YouTube Dislike ratio bar
-        document.querySelector("ytd-video-primary-info-renderer").removeAttribute("flex-menu-enabled");
 
         this.observer = new MutationObserver(this.onChange);
         this.observer.observe(document.querySelector("#page-manager"), { subtree: true, childList: true });
@@ -92,6 +90,14 @@ class YTP {
                 text.innerHTML = '<span class="yt-core-attributed-string yt-core-attributed-string--white-space-no-wrap" role="text"></span>';
                 dislike.insertBefore(text, dislike.lastChild);
             }
+        } else {
+            like = document.querySelector("ytd-segmented-like-dislike-button-renderer");
+        }
+
+        // Fixes Return YouTube Dislike ratio bar
+        var bar = document.querySelector(".ryd-tooltip");
+        if(bar) {
+            bar.style.left = (like.offsetLeft - 4) + "px";
         }
     }
 
