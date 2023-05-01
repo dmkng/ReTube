@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ReTube
-// @version      1.0.0
+// @version      1.1.0
 // @description  Brings back older YouTube design using as little CSS/JS as possible
 // @author       TheMaking (themaking64@cock.li)
 // @license      Unlicense
@@ -37,42 +37,40 @@ const PLYRFLAGS = {
 };
 
 class YTP {
-    static observer = new MutationObserver(this.onNewScript);
+    static observer = new MutationObserver(YTP.onNewScript);
 
     static _config = {};
 
-    static isObject(item) {
-        return (item && typeof item === "object" && !Array.isArray(item));
-    }
-
     static start() {
         // Matches button sizes
-        // Removes button margin
+        // Fixes button positions
+        // Fixes download button background
         // Fixes tooltips
         // Removes UI shrinking to adjust to the video size
+        // Fixes channel name and icon
         // Fixes Return YouTube Dislike ratio bar
         var style = document.createElement("style");
-        style.innerHTML = "ytd-button-renderer.ytd-menu-renderer button{width:36px;height:36px;}ytd-download-button-renderer button{width:36px!important;height:36px!important;}.ytd-video-primary-info-renderer yt-icon-button{width:36px!important;height:36px!important;}#menu.ytd-video-primary-info-renderer{top:0!important;}ytd-menu-renderer.ytd-video-primary-info-renderer{overflow-y:visible!important;}#primary{max-width:none!important;}#menu-container{display:block!important;}.ryd-tooltip{margin-top:-3px;}";
+        style.innerHTML = "ytd-menu-renderer .yt-spec-button-shape-next--icon-only-default,ytd-menu-renderer yt-icon-button{width:36px!important;height:36px!important}#menu.ytd-video-primary-info-renderer{top:1px!important}ytd-download-button-renderer button:not(:hover){background-color:transparent!important}ytd-menu-renderer.ytd-video-primary-info-renderer{overflow-y:visible!important}#primary{max-width:none!important}#upload-info.ytd-video-owner-renderer{margin-left:0.5rem}#avatar.ytd-video-owner-renderer{width:46px!important;height:46px!important}#channel-name.ytd-video-owner-renderer{font-size:1.5rem!important;}.ryd-tooltip{position:absolute;top:43px}";
         document.head.appendChild(style);
 
-        this.observer.observe(document, { subtree: true, childList: true });
+        YTP.observer.observe(document, { subtree: true, childList: true });
     }
 
     static stop() {
-        this.observer.disconnect();
+        YTP.observer.disconnect();
     }
 
     static forceStyle() {
-        // Fixes channel icon
-        document.querySelector("ytd-video-owner-renderer").removeAttribute("modern-metapanel");
         // Fixes margin above video title
         document.querySelector("ytd-watch-flexy").removeAttribute("rounded-info-panel");
+        // Fixes channel icon
+        document.querySelector("#avatar.ytd-video-owner-renderer").width = "46";
 
-        this.observer = new MutationObserver(this.onChange);
-        this.observer.observe(document.querySelector("#page-manager"), { subtree: true, childList: true });
+        YTP.observer = new MutationObserver(YTP.onChange);
+        YTP.observer.observe(document.querySelector("#page-manager"), { subtree: true, childList: true });
     }
 
-    static onChange() {
+    static onChange(mutations) {
         // Fixes like/dislike buttons
         var like = document.querySelector(".yt-spec-button-shape-next--segmented-start");
         if(like) {
@@ -87,43 +85,16 @@ class YTP {
                 dislike.classList.replace("yt-spec-button-shape-next--icon-only-default", "yt-spec-button-shape-next--icon-leading");
                 var text = document.createElement("div");
                 text.className = "cbox yt-spec-button-shape-next--button-text-content";
-                text.innerHTML = '<span class="yt-core-attributed-string yt-core-attributed-string--white-space-no-wrap" role="text"></span>';
+                text.innerHTML = '<span class="yt-core-attributed-string yt-core-attributed-string--white-space-no-wrap" role="text">0</span>';
                 dislike.insertBefore(text, dislike.lastChild);
             }
-        } else {
-            like = document.querySelector("ytd-segmented-like-dislike-button-renderer");
         }
 
         // Fixes Return YouTube Dislike ratio bar
         var bar = document.querySelector(".ryd-tooltip");
         if(bar) {
-            bar.style.left = (like.offsetLeft - 4) + "px";
+            bar.style.left = document.querySelector(".ytd-video-primary-info-renderer #top-level-buttons-computed").offsetLeft + "px";
         }
-    }
-
-    static mergeDeep(target, ...sources) {
-        if(!sources.length) return target;
-        const source = sources.shift();
-
-        if(this.isObject(target) && this.isObject(source)) {
-            for(const key in source) {
-                if(this.isObject(source[key])) {
-                    if(!target[key]) Object.assign(target, { [key]: {} });
-                    this.mergeDeep(target[key], source[key]);
-                } else {
-                    Object.assign(target, { [key]: source[key] });
-                }
-            }
-        }
-
-        return this.mergeDeep(target, ...sources);
-    }
-
-    static bruteforce() {
-        if(!window.yt) return;
-        if(!window.yt.config_) return;
-
-        this.mergeDeep(window.yt.config_, this._config);
     }
 
     static onNewScript(mutations) {
@@ -133,27 +104,45 @@ class YTP {
             }
         }
 
-        this.onChange();
+        YTP.onChange();
     }
 
-    static setCfg(name, value) {
-        this._config[name] = value;
+    static bruteforce() {
+        if(!window.yt || !window.yt.config_) return;
+
+        YTP.mergeDeep(window.yt.config_, YTP._config);
+    }
+
+    static isObject(item) {
+        return (item && typeof item === "object" && !Array.isArray(item));
+    }
+
+    static mergeDeep(target, ...sources) {
+        if(!sources.length) return target;
+        const source = sources.shift();
+
+        if(YTP.isObject(target) && YTP.isObject(source)) {
+            for(const key in source) {
+                if(YTP.isObject(source[key])) {
+                    if(!target[key]) Object.assign(target, { [key]: {} });
+                    YTP.mergeDeep(target[key], source[key]);
+                } else {
+                    Object.assign(target, { [key]: source[key] });
+                }
+            }
+        }
+
+        return YTP.mergeDeep(target, ...sources);
     }
 
     static setCfgMulti(configs) {
-        this.mergeDeep(this._config, configs);
-    }
-
-    static setExp(name, value) {
-        if(!("EXPERIMENT_FLAGS" in this._config)) this._config.EXPERIMENT_FLAGS = {};
-
-        this._config.EXPERIMENT_FLAGS[name] = value;
+        YTP.mergeDeep(YTP._config, configs);
     }
 
     static setExpMulti(exps) {
-        if(!("EXPERIMENT_FLAGS" in this._config)) this._config.EXPERIMENT_FLAGS = {};
+        if(!("EXPERIMENT_FLAGS" in YTP._config)) YTP._config.EXPERIMENT_FLAGS = {};
 
-        this.mergeDeep(this._config.EXPERIMENT_FLAGS, exps);
+        YTP.mergeDeep(YTP._config.EXPERIMENT_FLAGS, exps);
     }
 
     static decodePlyrFlags(flags) {
@@ -187,13 +176,13 @@ class YTP {
         if(!window.yt.config_) return;
         if(!window.yt.config_.WEB_PLAYER_CONTEXT_CONFIGS) return;
         var conCfgs = window.yt.config_.WEB_PLAYER_CONTEXT_CONFIGS;
-        if(!("WEB_PLAYER_CONTEXT_CONFIGS" in this._config)) this._config.WEB_PLAYER_CONTEXT_CONFIGS = {};
+        if(!("WEB_PLAYER_CONTEXT_CONFIGS" in YTP._config)) YTP._config.WEB_PLAYER_CONTEXT_CONFIGS = {};
 
         for(var cfg in conCfgs) {
-            var dflags = this.decodePlyrFlags(conCfgs[cfg].serializedExperimentFlags);
-            this.mergeDeep(dflags, flags);
-            this._config.WEB_PLAYER_CONTEXT_CONFIGS[cfg] = {
-                serializedExperimentFlags: this.encodePlyrFlags(dflags)
+            var dflags = YTP.decodePlyrFlags(conCfgs[cfg].serializedExperimentFlags);
+            YTP.mergeDeep(dflags, flags);
+            YTP._config.WEB_PLAYER_CONTEXT_CONFIGS[cfg] = {
+                serializedExperimentFlags: YTP.encodePlyrFlags(dflags)
             }
         }
     }
@@ -205,8 +194,10 @@ window.addEventListener("yt-page-data-updated", function tmp() {
     window.removeEventListener("yt-page-date-updated", tmp);
 });
 
-YTP.start();
+window.addEventListener("DOMContentLoaded", function() {
+    YTP.start();
 
-YTP.setCfgMulti(CONFIGS);
-YTP.setExpMulti(EXPFLAGS);
-YTP.setPlyrFlags(PLYRFLAGS);
+    YTP.setCfgMulti(CONFIGS);
+    YTP.setExpMulti(EXPFLAGS);
+    YTP.setPlyrFlags(PLYRFLAGS);
+});
