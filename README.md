@@ -2,9 +2,13 @@ ReTube
 ======
 User script that brings back older YouTube design using as little CSS/JS as possible
 
+Supports [Return YouTube Dislike](https://www.returnyoutubedislike.com/) extension
+
+Tested on Brave and Firefox, so it will also work on every other Chromium-based and Firefox-based web browser
+
 Based on [YouTube Patch Collection](https://github.com/aubymori/YouTubePatchCollection)
 
 Installation
 ------------
-1. Install [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) if on Chrome, [Greasemonkey](https://addons.mozilla.org/firefox/addon/greasemonkey/) if on Firefox
+1. Install Tampermonkey from [Chrome Web Store](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) or [Firefox Add-Ons](https://addons.mozilla.org/pl/firefox/addon/tampermonkey/)
 2. Install [ReTube](https://raw.githubusercontent.com/dmkng/ReTube/master/ReTube.user.js)
