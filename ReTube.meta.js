@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         ReTube
-// @version      1.1.0
+// @version      1.1.5
 // @description  Brings back older YouTube design using as little CSS/JS as possible
-// @author       TheMaking (themaking64@cock.li)
+// @author       TheMaking <themaking64@cock.li>
 // @license      Unlicense
 // @match        https://www.youtube.com/*
 // @icon         https://www.youtube.com/favicon.ico
