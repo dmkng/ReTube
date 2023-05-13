@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ReTube
-// @version      1.1.5
+// @version      1.2.0
 // @description  Brings back older YouTube design using as little CSS/JS as possible
 // @author       TheMaking <themaking64@cock.li>
 // @license      Unlicense
@@ -9,5 +9,8 @@
 // @updateURL    https://raw.githubusercontent.com/dmkng/ReTube/master/ReTube.meta.js
 // @downloadURL  https://raw.githubusercontent.com/dmkng/ReTube/master/ReTube.user.js
 // @run-at       document-start
-// @grant        none
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_registerMenuCommand
+// @grant        unsafeWindow
 // ==/UserScript==

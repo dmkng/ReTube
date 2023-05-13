@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ReTube
-// @version      1.1.5
+// @version      1.2.0
 // @description  Brings back older YouTube design using as little CSS/JS as possible
 // @author       TheMaking <themaking64@cock.li>
 // @license      Unlicense
@@ -9,8 +9,15 @@
 // @updateURL    https://raw.githubusercontent.com/dmkng/ReTube/master/ReTube.meta.js
 // @downloadURL  https://raw.githubusercontent.com/dmkng/ReTube/master/ReTube.user.js
 // @run-at       document-start
-// @grant        none
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_registerMenuCommand
+// @grant        unsafeWindow
 // ==/UserScript==
+
+const roundthumb = GM_getValue("roundthumb", false);
+const oldicons = GM_getValue("oldicons", false);
+const animlike = GM_getValue("animlike", true);
 
 // Regular config keys
 const CONFIGS = {
@@ -20,14 +27,14 @@ const CONFIGS = {
 // Experiment flags
 const EXPFLAGS = {
 	kevlar_refresh_on_theme_change: false,
-	kevlar_system_icons: true,
+	kevlar_system_icons: !oldicons,
 	kevlar_unavailable_video_error_ui_client: false,
 	kevlar_updated_icons: false,
 	kevlar_watch_color_update: false,
 	kevlar_watch_metadata_refresh: false,
 	kevlar_watch_modern_metapanel: false,
 	web_amsterdam_playlists: false,
-	web_animated_like: true,
+	web_animated_like: !oldicons && animlike,
 	web_darker_dark_theme: false,
 	web_guide_ui_refresh: false,
 	web_modern_buttons: false,
@@ -36,7 +43,7 @@ const EXPFLAGS = {
 	web_modern_playlists: false,
 	web_modern_subscribe: false,
 	web_rounded_containers: true,
-	web_rounded_thumbnails: false,
+	web_rounded_thumbnails: roundthumb,
 	web_sheets_ui_refresh: false,
 	web_snackbar_ui_refresh: false
 };
@@ -120,9 +127,9 @@ class YTP {
 	}
 
 	static bruteforce() {
-		if(!window.yt || !window.yt.config_) return;
+		if(!unsafeWindow.yt || !unsafeWindow.yt.config_) return;
 
-		YTP.mergeDeep(window.yt.config_, YTP._config);
+		YTP.mergeDeep(unsafeWindow.yt.config_, YTP._config);
 	}
 
 	static isObject(item) {
@@ -183,10 +190,10 @@ class YTP {
 	}
 
 	static setPlyrFlags(flags) {
-		if(!window.yt) return;
-		if(!window.yt.config_) return;
-		if(!window.yt.config_.WEB_PLAYER_CONTEXT_CONFIGS) return;
-		const conCfgs = window.yt.config_.WEB_PLAYER_CONTEXT_CONFIGS;
+		if(!unsafeWindow.yt) return;
+		if(!unsafeWindow.yt.config_) return;
+		if(!unsafeWindow.yt.config_.WEB_PLAYER_CONTEXT_CONFIGS) return;
+		const conCfgs = unsafeWindow.yt.config_.WEB_PLAYER_CONTEXT_CONFIGS;
 		if(!("WEB_PLAYER_CONTEXT_CONFIGS" in YTP._config)) YTP._config.WEB_PLAYER_CONTEXT_CONFIGS = {};
 
 		for(const flag in flags) {
@@ -205,16 +212,33 @@ class YTP {
 	}
 }
 
-window.addEventListener("yt-page-data-updated", function tmp() {
+unsafeWindow.addEventListener("yt-page-data-updated", function tmp() {
 	YTP.stop();
 	YTP.forceStyle();
-	window.removeEventListener("yt-page-date-updated", tmp);
+	unsafeWindow.removeEventListener("yt-page-date-updated", tmp);
 });
 
 YTP.setCfgMulti(CONFIGS);
 YTP.setExpMulti(EXPFLAGS);
 
-window.addEventListener("DOMContentLoaded", function() {
+unsafeWindow.addEventListener("DOMContentLoaded", function() {
 	YTP.start();
 	YTP.setPlyrFlags(EXPFLAGS);
 });
+
+GM_registerMenuCommand(roundthumb ? "Disable rounded thumbnails" : "Enable rounded thumbnails", function() {
+	GM_setValue("roundthumb", !roundthumb);
+	unsafeWindow.location.reload();
+});
+
+GM_registerMenuCommand(oldicons ? "Disable old icons" : "Enable old icons", function() {
+	GM_setValue("oldicons", !oldicons);
+	unsafeWindow.location.reload();
+});
+
+if(!oldicons) {
+	GM_registerMenuCommand(animlike ? "Disable like animation" : "Enable like animation", function() {
+		GM_setValue("animlike", !animlike);
+		unsafeWindow.location.reload();
+	});
+}

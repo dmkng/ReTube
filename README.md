@@ -8,6 +8,9 @@ Tested on Brave and Firefox, so it will also work on every other Chromium-based 
 
 Based on [YouTube Patch Collection](https://github.com/aubymori/YouTubePatchCollection)
 
+The following configuration options are available in the popup menu:
+![Screenshot of the Tampermonkey's popup menu](/menu.png)
+
 Installation
 ------------
 1. Install Tampermonkey from [Chrome Web Store](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) or [Firefox Add-Ons](https://addons.mozilla.org/pl/firefox/addon/tampermonkey/)
