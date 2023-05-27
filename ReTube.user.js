@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ReTube
-// @version      1.2.0
+// @version      1.3.0
 // @description  Brings back older YouTube design using as little CSS/JS as possible
 // @author       TheMaking <themaking64@cock.li>
 // @license      Unlicense
@@ -101,7 +101,7 @@ class YTP {
 				dislike.classList.remove("yt-spec-button-shape-next--segmented-end");
 				dislike.classList.replace("yt-spec-button-shape-next--tonal", "yt-spec-button-shape-next--text");
 
-				dislike.classList.replace("yt-spec-button-shape-next--icon-only-default", "yt-spec-button-shape-next--icon-leading");
+				dislike.classList.replace("yt-spec-button-shape-next--icon-button", "yt-spec-button-shape-next--icon-leading");
 				const text = document.createElement("div");
 				text.className = "cbox yt-spec-button-shape-next--button-text-content";
 				text.innerHTML = '<span class="yt-core-attributed-string yt-core-attributed-string--white-space-no-wrap" role="text">0</span>';
