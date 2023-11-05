@@ -16,3 +16,4 @@ Installation
 ------------
 1. Install Tampermonkey from [Chrome Web Store](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) or [Firefox Add-Ons](https://addons.mozilla.org/pl/firefox/addon/tampermonkey/)
 2. Install [ReTube](https://raw.githubusercontent.com/dmkng/ReTube/master/ReTube.user.js)
+3. Optional: If you want to lightly customize ReTube, Install [ReTube Settings](https://raw.githubusercontent.com/dmkng/ReTube/master/ReTubeSettings.user.js)
